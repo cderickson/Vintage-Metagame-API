@@ -1,0 +1,14 @@
+#%RAML 1.0 DataType
+
+properties:
+  eventId:
+    example: 01-01-2023-EventType-1
+    type: string
+  eventType:
+    example: Challenge
+    type: string
+  eventDate:
+    example: 2023-01-01
+    type: date-only
+  finishes?:
+    items: !include Finish.raml
