@@ -6,14 +6,17 @@ sheet_archive = '1PxNYGMXaVrRqI0uyMQF46K7nDEG16WnDoKrFyI_qrvE'
 gid_matches = '2141931777'
 gid_deck = '590005429'
 
+with open("credentials.txt", "r") as file:
+    credentials = [line.strip() for line in file]
+
 def conn(query):
     try:
         conn = psycopg2.connect(
-            host='XXXX',
-            port=5432,
-            user='XXXX',
-            password='XXXX',
-            database='XXXX'
+            host=credentials[0],
+            port=credentials[1],
+            user=credentials[2],
+            password=credentials[3],
+            database=credentials[4]
         )
         cursor = conn.cursor()
 
