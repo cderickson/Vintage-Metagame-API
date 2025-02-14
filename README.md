@@ -1,4 +1,4 @@
-# Vintage MTGO Tournament ETL
+# Vintage MTGO Metagame ETL
 
 ## Overview
 
