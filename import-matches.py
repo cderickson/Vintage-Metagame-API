@@ -8,11 +8,6 @@ warnings.filterwarnings('ignore', category=UserWarning, message="pandas only sup
 
 start_time = time.time()
 
-sheet_curr = '1wxR3iYna86qrdViwHjUPzHuw6bCNeMLb72M25hpUHYk'
-sheet_archive = '1PxNYGMXaVrRqI0uyMQF46K7nDEG16WnDoKrFyI_qrvE'
-gid_matches = '2141931777'
-gid_deck = '590005429'
-
 if len(sys.argv) > 1:
     tuple_str = sys.argv[1]
     date_tuple = ast.literal_eval(tuple_str)
@@ -30,7 +25,7 @@ else:
 start_date = datetime(year, month, day).date()
 end_date = start_date + timedelta(days=7)
 
-df_matches, df_events, load_rep_list, event_skipped_rej = mi.parse_matchup_sheet(sheet_curr, gid_matches, start_date=start_date, end_date=end_date)
+df_matches, df_events, load_rep_list, event_skipped_rej = mi.parse_matchup_sheet(start_date=start_date, end_date=end_date)
 # mi.test(df_matches, df_events)
 load_rep_ins, event_rej, match_rej = mi.match_insert(df_matches, df_events, start_date=start_date, end_date=end_date)
 

@@ -2,6 +2,11 @@ import pandas as pd
 import psycopg2
 from datetime import datetime
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+credentials = [os.getenv("DB_HOST"), os.getenv("DB_PORT"), os.getenv("DB_USER"), os.getenv("DB_PASSWORD"), os.getenv("DB_NAME")]
+gsheets = [os.getenv("VINTAGE_SHEET_CURR"), os.getenv("VINTAGE_SHEET_ARCHIVE"), os.getenv("VINTAGE_GID_MATCHES"), os.getenv("VINTAGE_GID_DECK")]
 
 # MATCH_ID      = 11000000000
 # EVENT_ID      = 12000000000
@@ -18,8 +23,8 @@ def read_credentials():
     with open("credentials.txt", "r") as file:
         return [line.strip() for line in file]
     
-def parse_class_sheet(sheet,gid):
-    deck_url = f'https://docs.google.com/spreadsheets/d/{sheet}/export?format=csv&gid={gid}'
+def parse_class_sheet():
+    deck_url = f'https://docs.google.com/spreadsheets/d/{gsheets[0]}/export?format=csv&gid={gsheets[3]}'
     df = pd.read_csv(deck_url)
 
     # Create dataframe with valid Deck Names.
@@ -65,13 +70,14 @@ def class_insert(df_valid_decks=None, df_valid_event_types=None):
     """
     proc_dt = datetime.now()
     try:
-        credentials = read_credentials()
+        # credentials = read_credentials()
         conn = psycopg2.connect(
             host=credentials[0],
             port=credentials[1],
             user=credentials[2],
             password=credentials[3],
-            database=credentials[4]
+            database=credentials[4],
+            sslmode='require'
         )
         cursor = conn.cursor()
 

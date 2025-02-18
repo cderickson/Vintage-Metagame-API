@@ -1,11 +1,11 @@
 import pandas as pd
 import psycopg2
 import os
+from dotenv import load_dotenv
 
-sheet_curr = '1wxR3iYna86qrdViwHjUPzHuw6bCNeMLb72M25hpUHYk'
-sheet_archive = '1PxNYGMXaVrRqI0uyMQF46K7nDEG16WnDoKrFyI_qrvE'
-gid_matches = '2141931777'
-gid_deck = '590005429'
+load_dotenv()
+credentials = [os.getenv("DB_HOST"), os.getenv("DB_PORT"), os.getenv("DB_USER"), os.getenv("DB_PASSWORD"), os.getenv("DB_NAME")]
+gsheets = [os.getenv("VINTAGE_SHEET_CURR"), os.getenv("VINTAGE_SHEET_ARCHIVE"), os.getenv("VINTAGE_GID_MATCHES"), os.getenv("VINTAGE_GID_DECK")]
 
 # MATCH_ID      = 11000000000
 # EVENT_ID      = 12000000000
@@ -24,13 +24,14 @@ def read_credentials():
     
 def conn(query, vars=()):
     try:
-        credentials = read_credentials()
+        # credentials = read_credentials()
         conn = psycopg2.connect(
             host=credentials[0],
             port=credentials[1],
             user=credentials[2],
             password=credentials[3],
-            database=credentials[4]
+            database=credentials[4],
+            sslmode='require'
         )
         cursor = conn.cursor()
 

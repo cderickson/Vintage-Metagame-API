@@ -4,6 +4,11 @@ from datetime import datetime, timedelta
 import warnings
 import traceback
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+credentials = [os.getenv("DB_HOST"), os.getenv("DB_PORT"), os.getenv("DB_USER"), os.getenv("DB_PASSWORD"), os.getenv("DB_NAME")]
+gsheets = [os.getenv("VINTAGE_SHEET_CURR"), os.getenv("VINTAGE_SHEET_ARCHIVE"), os.getenv("VINTAGE_GID_MATCHES"), os.getenv("VINTAGE_GID_DECK")]
 
 sheet_curr = '1wxR3iYna86qrdViwHjUPzHuw6bCNeMLb72M25hpUHYk'
 sheet_archive = '1PxNYGMXaVrRqI0uyMQF46K7nDEG16WnDoKrFyI_qrvE'
@@ -28,13 +33,14 @@ def read_credentials():
         return [line.strip() for line in file]
     
 def get_df(query, vars=()):
-    credentials = read_credentials()
+    # credentials = read_credentials()
     conn = psycopg2.connect(
         host=credentials[0],
         port=credentials[1],
         user=credentials[2],
         password=credentials[3],
-        database=credentials[4]
+        database=credentials[4],
+        sslmode='require'
     )
 
     df = pd.read_sql(query,conn,params=vars)
@@ -44,13 +50,14 @@ def get_df(query, vars=()):
 
 def delete_records(start_date, end_date):
     try:
-        credentials = read_credentials()
+        # credentials = read_credentials()
         conn = psycopg2.connect(
             host=credentials[0],
             port=credentials[1],
             user=credentials[2],
             password=credentials[3],
-            database=credentials[4]
+            database=credentials[4],
+            sslmode='require'
         )
         cursor = conn.cursor()
 
@@ -69,15 +76,16 @@ def delete_records(start_date, end_date):
             cursor.close()
             conn.close()
 
-def parse_matchup_sheet(sheet,gid,start_date=None,end_date=None):
+def parse_matchup_sheet(start_date=None,end_date=None):
     def get_max_id():
-        credentials = read_credentials()
+        # credentials = read_credentials()
         conn = psycopg2.connect(
             host=credentials[0],
             port=credentials[1],
             user=credentials[2],
             password=credentials[3],
-            database=credentials[4]
+            database=credentials[4],
+            sslmode='require'
         )
 
         cursor = conn.cursor()
@@ -138,15 +146,23 @@ def parse_matchup_sheet(sheet,gid,start_date=None,end_date=None):
         df['P1_DECK_ID'] = df['P1_DECK_ID'].fillna(invalid_code)
         df['P2_DECK_ID'] = df['P2_DECK_ID'].fillna(invalid_code)
 
-        df['P1_NOTE'] = df.apply(lambda row: f'{row['P1_ARCH']}-{row['P1_SUBARCH']}: {row['P1_NOTE']}' if row['P1_DECK_ID'] == invalid_code else row['P1_NOTE'], axis=1)
-        df['P2_NOTE'] = df.apply(lambda row: f'{row['P2_ARCH']}-{row['P2_SUBARCH']}: {row['P2_NOTE']}' if row['P2_DECK_ID'] == invalid_code else row['P2_NOTE'], axis=1)
+        df['P1_NOTE'] = df.apply(
+            lambda row: "{}-{}: {}".format(row['P1_ARCH'], row['P1_SUBARCH'], row['P1_NOTE'])
+            if row['P1_DECK_ID'] == invalid_code else row['P1_NOTE'], 
+            axis=1
+        )
+        df['P2_NOTE'] = df.apply(
+            lambda row: "{}-{}: {}".format(row['P2_ARCH'], row['P2_SUBARCH'], row['P2_NOTE'])
+            if row['P2_DECK_ID'] == invalid_code else row['P2_NOTE'], 
+            axis=1
+        )
 
         return df[['MATCH_ID','P1','P2','P1_WINS','P2_WINS','MATCH_WINNER','P1_DECK_ID','P2_DECK_ID','P1_NOTE','P2_NOTE','EVENT_ID']]
     
     event_id_start, match_id_start = get_max_id()
     skipped_events_rej = []
     
-    sheet_url = f'https://docs.google.com/spreadsheets/d/{sheet}/export?format=csv&gid={gid}'
+    sheet_url = f'https://docs.google.com/spreadsheets/d/{gsheets[0]}/export?format=csv&gid={gsheets[2]}'
     df = pd.read_csv(sheet_url)
 
     # Full dataset size for (for Load Report).
@@ -301,13 +317,14 @@ def match_insert(df_matches=None, df_events=None, start_date=None, end_date=None
     event_id_rej = set()
     match_id_rej = set()
     try:
-        credentials = read_credentials()
+        # credentials = read_credentials()
         conn = psycopg2.connect(
             host=credentials[0],
             port=credentials[1],
             user=credentials[2],
             password=credentials[3],
-            database=credentials[4]
+            database=credentials[4],
+            sslmode='require'
         )
         cursor = conn.cursor()
 
@@ -471,13 +488,14 @@ def insert_load_stats(load_report,event_rej,match_rej):
     match_count = 0
     load_rpt_id = 0
     try:
-        credentials = read_credentials()
+        # credentials = read_credentials()
         conn = psycopg2.connect(
             host=credentials[0],
             port=credentials[1],
             user=credentials[2],
             password=credentials[3],
-            database=credentials[4]
+            database=credentials[4],
+            sslmode='require'
         )
         cursor = conn.cursor()
 
