@@ -4,7 +4,7 @@
 
 This project is an ETL (Extract, Transform, Load) pipeline designed to process match results for Vintage tournaments on Magic Online (MTGO). The pipeline pulls data from a public Google Sheet, cleans and transforms it, and loads it into a PostgreSQL database. The processed data is then used to support a public REST API for community access and data analysis.
 
-## Features
+## Process
 
 - **Extract** data from a publicly maintained Google Sheet.
 - **Clean & Transform** tournament results, matchups, and deck information.
