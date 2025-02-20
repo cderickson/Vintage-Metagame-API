@@ -24,7 +24,7 @@ The data is loaded into a PostgreSQL database with the following tables:
 - **MATCHES**: Stores match results, player deck IDs, and outcomes.
 - **MATCH_REJECTIONS**: Tracks rejected matches and reason text.
 - **VALID_DECKS**: Classification table storing valid deck archetypes.
-- **VALID_EVENT_TYPES**: Classification table contains valid event type names.
+- **VALID_EVENT_TYPES**: Classification table containing valid event type names.
 - **LOAD_REPORTS**: Logs ETL process execution details.
 
 The [**Data Dictionary**](https://github.com/cderickson/Vintage-Metagame-API/wiki/Data-Dictionary) contains feature definitions.
